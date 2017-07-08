@@ -114,7 +114,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		import socket
 
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		s.connect(('loclhst.com', 0))
+		s.connect(('google.com', 0))
 		ipaddr = s.getsockname()[0]
 		self.sendInformer("My IP Address",ipaddr,"My IP is "+ipaddr,"3")
 
