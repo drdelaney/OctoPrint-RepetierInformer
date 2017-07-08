@@ -1,6 +1,7 @@
-# OctoPrint-Repetierinformer
+# OctoPrint-RepetierInformer
 
-**TODO:** Describe what your plugin does.
+Recieve push notifications using the paid for Repetier-Informer app for android or apple.
+More information can be obtained via the Repetier Apps webpage at https://www.repetier-apps.com.
 
 ## Setup
 
@@ -9,9 +10,8 @@ or manually using this URL:
 
     https://github.com/drdelaney/OctoPrint-Repetierinformer/archive/master.zip
 
-**TODO:** Describe how to install your plugin, if more needs to be done than just installing it via pip or through
-the plugin manager.
-
 ## Configuration
 
-**TODO:** Describe your plugin's configuration options (if any).
+Set up your Informer-Group within the app first.
+Once set up, edit the settings for the plugin and enter the group in, as well as the other optional values.
+Change your notification options as required.
