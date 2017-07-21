@@ -1,0 +1,139 @@
+<h3>{{ _('Repetier-Informer for OctoPrint Configuration') }}</h3>
+
+<form class="form-horizontal">
+	<p>{{ _('
+		Repetier-Informer is an application for Android and Apple devices which resives a push notification on print status.<br />
+		This smart device app was originally designed to work with Repetier-Host and Repetier-Server applications.<br />
+		Create your group in the settings of the app.
+	') }}</p>
+
+	<p>{{ _('General settings') }}</p>
+
+	<div class="control-group">
+		<label class="control-label">{{ _('Enable Notifications') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.enabled">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Origin Hostname') }}</label>
+		<div class="controls">
+			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.hostname">
+			<small>An optional hostname of OctoPrint that gets sent with the message.</small>
+		</div>
+
+		<label class="control-label">{{ _('Informer-Group') }}</label>
+		<div class="controls">
+			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.informergroup">
+			<small>The target group from from the app. This is defined from the smart device app.<br />
+			As a quick note, this will send to all apps configured to receive as this group!</small>
+		</div>
+
+		<label class="control-label">{{ _('Optional URL') }}</label>
+		<div class="controls">
+			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.url">
+			<small>An optional URL to be sent with each message. An example would be a webcam URL.</small>
+		</div>
+
+		<p>{{ _('Notify on...') }}</p>
+
+		<label class="control-label">{{ _('System Startup') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.startup">
+				<small>{{ _('This will send a message containing the<br /> IP address of the OctoPrint instance') }}</small>
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Printer Connected') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printerconnected">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Printer Disconnected') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printerdisconnected">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Printer Error') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printererror">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Start') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printstart">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Failed') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printfailed">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Finished') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printdone">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Canceled') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printcancel">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Paused') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printpause">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Print Resume') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.printresume">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Timelapse Started') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.timelapsestart">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Timelapse Finished') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.timelapsefinish">
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Timelapse Failed') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.timelapsefailed">
+			</label>
+		</div>
+
+	</div>
+
+	<p>{{ _('
+		More information can be obtained via the Repetier Apps webpage at <a href="https://www.repetier-apps.com/" target="_blank">https://www.repetier-apps.com</a>.<br />
+		Download the app via the <a href="https://play.google.com/store/apps/details?id=com.ionicframework.repetierinformer337630" target="_blank">Google Play</a> or <a href="https://itunes.apple.com/us/app/repetier-informer/id891239043" target="_blank">iTunes</a> store.
+	') }}</p>
+</form>
