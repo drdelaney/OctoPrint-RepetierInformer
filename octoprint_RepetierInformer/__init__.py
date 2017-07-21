@@ -9,19 +9,26 @@ import requests
 # - Print status every X minutes
 # - End user configurable messages
 # - Parse req.text for error and display popup on web ui
+# - Get actual error details /  {error} is not working as expected
 
 # Custom variables
-informerappid = 'Xh9lPgJujHahKiUq' # this should be changed. for now, we are cloning Repetier
-informerurl = 'http://informer.repetier-apps.com/api/1/message.php'
+informerurl = 'https://informer.repetier-apps.com/api/1/message.php'
+
+# Repetier-Host / Xh9lPgJujHahKiUq; 1: OK, 2: ERROR, 3: INFO, 4: PAUSE
+# Repetier-Server / (unknown); 5: OK, 6: ERROR, 7: INFO, 8: PAUSE
+# OctoPrint / 0dd1065d141a856b22ef89b7d84b1ed5; 9: OK, 10: ERROR, 11: INFO, 12: PAUSE
+
+informerappid = '0dd1065d141a856b22ef89b7d84b1ed5'
+inform_ok = '9'
+inform_err = '10'
+inform_info = '11'
+inform_pause = '12'
 
 # Grab OctoPrint version info
 # Please tell me if there is a better or cleaner way to grab the x.y.z version
 from octoprint._version import get_versions
 versions = get_versions()
 octoversion = versions['version']
-
-# Make a generic useragent string
-#useragent = 'OctoPrint/xx ('+self._plugin_name+'/'+self._plugin_version+')'
 
 class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.EventHandlerPlugin,
@@ -75,9 +82,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		)
 
 	# Function to handle the message generation
-	def sendInformer(self,header,preview,message,image="3"):
-		# Image numbers; 1: OK, 2: ERROR, 3: INFO, 4: PAUSE
-
+	def sendInformer(self,header,preview,message,image=inform_info):
 		# Easier to read variables
 		customurl = ""
 		group = self._settings.get(["informergroup"])
@@ -104,10 +109,11 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		headers.update( { 'User-Agent': useragent, } )
 
 		req = requests.post(informerurl, headers=headers, data=informerdata)
+		self._logger.info("Sent header: "+header)
 		self._logger.info(req.text)
 
 	def sendTest(self):
-		self.sendInformer("header text","preview","hello world","3")
+		self.sendInformer("header text","preview","hello world",inform_info)
 
 	def sendInformerIp(self):
 		# We only need socket here, to grab the IP
@@ -116,14 +122,14 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		s.connect(('google.com', 0))
 		ipaddr = s.getsockname()[0]
-		self.sendInformer("My IP Address",ipaddr,"My IP is "+ipaddr,"3")
+		self.sendInformer("My IP Address",ipaddr,"My IP is "+ipaddr,inform_info)
 
 	def on_after_startup(self):
 		if not self._settings.get(['enabled']):
 			return
 
 		if self._settings.get(['notify','startup']):
-			self._logger.info("Sending IP to group")
+			self._logger.info("Sending IP to group "+self._settings.get(["informergroup"]))
 			self.sendInformerIp()
 			return
 
@@ -134,54 +140,57 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 			return
 
 		# Handle events
-		# Image numbers; 1: OK, 2: ERROR, 3: INFO, 4: PAUSE
 		if event == 'Connected':
 			if self._settings.get(['notify','printerconnected']):
-				self.sendInformer("Printer Connected","Connected to Printer","A connection has been established with the printer","3")
+				self.sendInformer("Printer Connected","Connected to Printer","A connection has been established with the printer",inform_info)
 				return
 		if event == 'Disconnected':
 			if self._settings.get(['notify','printerdisconnected']):
-				self.sendInformer("Printer Disconnected","Disconnected from Printer","The connection to the printer has been disconnected","3")
+				self.sendInformer("Printer Disconnected","Disconnected from Printer","The connection to the printer has been disconnected",inform_info)
 				return
 		if event == 'Error':
 			if self._settings.get(['notify','printererror']):
-				self.sendInformer("Printer Error","Communication error with Printer","{error}","2")
+# FIXME
+				#self.sendInformer("Printer Error","Communication error with Printer","{error}",inform_err)
+				self.sendInformer("Printer Error","Communication error with Printer","Communication error with Printer",inform_err)
 				return
 		if event == 'PrintStarted':
 			if self._settings.get(['notify','printstart']):
-				self.sendInformer("Printing started","Printng has started","Printing has started","3")
+				self.sendInformer("Printing started","Printng has started","Printing has started",inform_info)
 				return
 		if event == 'PrintFailed':
 			if self._settings.get(['notify','printfailed']):
-				self.sendInformer("Printing failed","Printng has failed","Printing has Failed","2")
+				self.sendInformer("Printing failed","Printng has failed","Printing has Failed",inform_err)
 				return
 		if event == 'PrintDone':
 			if self._settings.get(['notify','printdone']):
-				self.sendInformer("Printing finished","Printng has finished","Printing has finished","1")
+				self.sendInformer("Printing finished","Printng has finished","Printing has finished",inform_ok)
 				return
 		if event == 'PrintCancelled':
 			if self._settings.get(['notify','printcancel']):
-				self.sendInformer("Printing cancleed","Printng has been canceled","Printing has been cacnceled by user","2")
+				self.sendInformer("Printing cancleed","Printng has been canceled","Printing has been cacnceled by user",inform_err)
 				return
 		if event == 'PrintPaused':
 			if self._settings.get(['notify','printpause']):
-				self.sendInformer("Printing paused","Printng has been paused","Printing has been paused","4")
+				self.sendInformer("Printing paused","Printng has been paused","Printing has been paused",inform_pause)
 				return
 		if event == 'PrintResumed':
 			if self._settings.get(['notify','printresume']):
-				self.sendInformer("Printing resumed","Printng has been resumed","Printing has been resumed","1")
+				self.sendInformer("Printing resumed","Printng has been resumed","Printing has been resumed",inform_ok)
 				return
 		if event == 'MovieRendering':
 			if self._settings.get(['notify','timelapsestart']):
-				self.sendInformer("Timelapse started","Timelapse rendering has stared","Timelapse rendering has started","3")
+				self.sendInformer("Timelapse started","Timelapse rendering has stared","Timelapse rendering has started",inform_info)
 				return
 		if event == 'MovieDone':
 			if self._settings.get(['notify','timelapsefinish']):
-				self.sendInformer("Timelapse finshed","Timelapse rendering has finished","Timelapse rendering has finished","1")
+				self.sendInformer("Timelapse finshed","Timelapse rendering has finished","Timelapse rendering has finished",inform_ok)
 				return
 		if event == 'MovieFailed':
 			if self._settings.get(['notify','timelapsefailed']):
-				self.sendInformer("Timelapse failed","Timelapse rendering has failed","{error}","2")
+# FIXME
+				#self.sendInformer("Timelapse failed","Timelapse rendering has failed","{error}",inform_err)
+				self.sendInformer("Timelapse failed","Timelapse rendering has failed","Timelapse rendering has failed",inform_err)
 				return
 
 
