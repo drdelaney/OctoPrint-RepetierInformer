@@ -8,7 +8,7 @@ More information can be obtained via the Repetier Apps webpage at https://www.re
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
 or manually using this URL:
 
-    https://github.com/drdelaney/OctoPrint-Repetierinformer/archive/master.zip
+    https://github.com/drdelaney/OctoPrint-RepetierInformer/archive/master.zip
 
 ## Configuration
 
