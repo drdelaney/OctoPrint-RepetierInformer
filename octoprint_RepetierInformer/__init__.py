@@ -42,6 +42,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 			hostname="OctoPrint",
 			informergroup="",
 			url="",
+			devrelease=False,
 			notify=dict(
 				startup=False,
 				printstart=False,
@@ -65,9 +66,13 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		]
 
 	def get_update_information(self):
+		mybranch = 'master'
+		if self._settings.get(['devrelease']):
+			mybranch = 'dev'
+			
 		return dict(
 			RepetierInformer=dict(
-				displayName="Repetier-Informer for OctoPrint",
+				displayName=self._plugin_name,
 				displayVersion=self._plugin_version,
 
 				# version check: github repository
@@ -75,6 +80,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				user="drdelaney",
 				repo="OctoPrint-RepetierInformer",
 				current=self._plugin_version,
+				branch=mybranch,
 
 				# update method: pip
 				pip="https://github.com/drdelaney/OctoPrint-RepetierInformer/archive/{target_version}.zip"
