@@ -20,20 +20,20 @@
 		<label class="control-label">{{ _('Origin Hostname') }}</label>
 		<div class="controls">
 			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.hostname">
-			<small>An optional hostname of OctoPrint that gets sent with the message.</small>
+			<span class="help-inline">An optional hostname of OctoPrint that gets sent with the message.</span>
 		</div>
 
 		<label class="control-label">{{ _('Informer-Group') }}</label>
 		<div class="controls">
 			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.informergroup">
-			<small>The target group from from the app. This is defined from the smart device app.<br />
-			As a quick note, this will send to all apps configured to receive as this group!</small>
+			<span class="help-inline">The target group from from the app. This is defined from the smart device app.<br />
+			As a quick note, this will send to all apps configured to receive as this group!</span>
 		</div>
 
 		<label class="control-label">{{ _('Optional URL') }}</label>
 		<div class="controls">
 			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.url">
-			<small>An optional URL to be sent with each message. An example would be a webcam URL.</small>
+			<span class="help-inline">An optional URL to be sent with each message. An example would be a webcam URL.</span>
 		</div>
 
 		<p>{{ _('Notify on...') }}</p>
@@ -42,7 +42,7 @@
 		<div class="controls">
 			<label class="checkbox">
 				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.startup">
-				<small>{{ _('This will send a message containing the<br /> IP address of the OctoPrint instance') }}</small>
+				<span class="help-inline">{{ _('This will send a message containing the<br /> IP address of the OctoPrint instance') }}</span>
 			</label>
 		</div>
 
@@ -130,15 +130,11 @@
 			</label>
 		</div>
 
-		<p>{{ _('Development Testing') }}</p>
-
-		<label class="control-label">{{ _('Use the dev branch') }}</label>
+		<label class="control-label">{{ _('Interval') }}</label>
 		<div class="controls">
-			<label class="checkbox">
-				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.devrelease">
-			</label>
+			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.notify.interval">
+			<!--<select data-bind="options: notify_timer_values, value: settings.plugins.RepetierInformer.notify.interval"></select>-->
 		</div>
-
 
 	</div>
 

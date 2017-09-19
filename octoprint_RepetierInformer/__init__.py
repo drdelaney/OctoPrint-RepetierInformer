@@ -2,20 +2,24 @@
 from __future__ import absolute_import
 
 import octoprint.plugin
+import octoprint.events
 import octoprint._version
 import requests
 
 # TODO:
-# - Print status every X minutes
 # - End user configurable messages
 # - Parse req.text for error and display popup on web ui
 # - Get actual error details /  {error} is not working as expected
 
+# Known Bugs:
+# - Pause is not triggering when M600 is ran. Need to check norma pause mode.
+
 # Custom variables
 informerurl = 'https://informer.repetier-apps.com/api/1/message.php'
 
+# App Ids for the notifications. Found via packet capture. (And asking nicely for my own!)
 # Repetier-Host / Xh9lPgJujHahKiUq; 1: OK, 2: ERROR, 3: INFO, 4: PAUSE
-# Repetier-Server / (unknown); 5: OK, 6: ERROR, 7: INFO, 8: PAUSE
+# Repetier-Server / uH6CeLoNu8X4AfQp; 5: OK, 6: ERROR, 7: INFO, 8: PAUSE
 # OctoPrint / 0dd1065d141a856b22ef89b7d84b1ed5; 9: OK, 10: ERROR, 11: INFO, 12: PAUSE
 
 informerappid = '0dd1065d141a856b22ef89b7d84b1ed5'
@@ -24,6 +28,12 @@ inform_err = '10'
 inform_info = '11'
 inform_pause = '12'
 
+# Timer
+from octoprint.util import RepeatedTimer
+timerStarted = False
+timerProgress = '0'
+timer = None
+
 # Grab OctoPrint version info
 # Please tell me if there is a better or cleaner way to grab the x.y.z version
 from octoprint._version import get_versions
@@ -31,6 +41,7 @@ versions = get_versions()
 octoversion = versions['version']
 
 class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
+				octoprint.plugin.ProgressPlugin,
 				octoprint.plugin.EventHandlerPlugin,
 				octoprint.plugin.SettingsPlugin,
 				octoprint.plugin.AssetPlugin,
@@ -56,7 +67,8 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				timelapsefailed=True,
 				printerconnected=False,
 				printerdisconnected=False,
-				printererror=True
+				printererror=True,
+				interval=0
 			)
 		)
 
@@ -128,7 +140,64 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		s.connect(('google.com', 0))
 		ipaddr = s.getsockname()[0]
-		self.sendInformer("My IP Address",ipaddr,"My IP is "+ipaddr,inform_info)
+		self.sendInformer("My IP Address",self._settings.get(['hostname'])+": "+ipaddr,"My IP is "+ipaddr,inform_info)
+
+	def sendInformerStatus(self):
+		global timerProgress
+
+		self.sendInformer("Print Progress","Print Progress "+str(timerProgress)+"%","Print Progress "+str(timerProgress)+"%",inform_info)
+
+	def startTimer(self):
+		global timerStarted
+		global timer
+
+		if not self._settings.get(['enabled']):
+			self._logger.info("Not enabled, will not start timer.")
+			return
+
+		# We know 0 is off/false
+		if not int(self._settings.get(['notify','interval'])):
+			self._logger.info("Notify interval disabled")
+
+			timerStarted = False
+
+			return
+
+		# Protect ourself from spamming Repetier
+		if (int(self._settings.get(['notify','interval'])) <= 299):
+			self._logger.info("Notify interval of "+str(self._settings.get(['notify','interval']))+" is set too low. Not starting timer.")
+			return
+
+		self._logger.info("Starting timer with an interval of "+str(self._settings.get(['notify','interval']))+" seconds")
+
+		timerStarted = True
+
+		# Blank in case an old timer exists
+		timer = None
+		timer = RepeatedTimer(int(self._settings.get(['notify','interval'])), self.sendInformerStatus, run_first=False)
+		timer.start()
+
+		return
+
+	def stopTimer(self):
+		global timerStarted
+		global timerProgress
+		global timer
+		self._logger.info("Stopping the timer")
+
+		timer.cancel()
+
+		timerStarted = False
+		timerProgress = '0'
+
+#       def on_settings_save(self, data):
+#       return
+
+
+	def on_print_progress(self, storage, path, progress):
+		global timerProgress
+
+		timerProgress = progress
 
 	def on_after_startup(self):
 		if not self._settings.get(['enabled']):
@@ -161,18 +230,30 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				self.sendInformer("Printer Error","Communication error with Printer","Communication error with Printer",inform_err)
 				return
 		if event == 'PrintStarted':
+			if not timerStarted:
+				self.startTimer()
+
 			if self._settings.get(['notify','printstart']):
 				self.sendInformer("Printing started","Printng has started","Printing has started",inform_info)
 				return
 		if event == 'PrintFailed':
+			if timerStarted:
+				self.stopTimer()
+
 			if self._settings.get(['notify','printfailed']):
 				self.sendInformer("Printing failed","Printng has failed","Printing has Failed",inform_err)
 				return
 		if event == 'PrintDone':
+			if timerStarted:
+				self.stopTimer()
+
 			if self._settings.get(['notify','printdone']):
 				self.sendInformer("Printing finished","Printng has finished","Printing has finished",inform_ok)
 				return
 		if event == 'PrintCancelled':
+			if timerStarted:
+				self.stopTimer()
+
 			if self._settings.get(['notify','printcancel']):
 				self.sendInformer("Printing cancleed","Printng has been canceled","Printing has been cacnceled by user",inform_err)
 				return

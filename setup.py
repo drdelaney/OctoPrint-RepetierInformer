@@ -14,7 +14,7 @@ plugin_package = "octoprint_RepetierInformer"
 plugin_name = "Repetier-Informer for OctoPrint"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.1"
+plugin_version = "0.1.3"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
@@ -24,7 +24,7 @@ plugin_description = """An unofficial plugin to send notices to the Repetier-Inf
 plugin_author = "Dan Delaney"
 
 # The plugin's author's mail address.
-plugin_author_email = "repetier-octoprint@loclhst.com"
+plugin_author_email = "octoprint-plugins@loclhst.com"
 
 # The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
 plugin_url = "https://github.com/drdelaney/OctoPrint-RepetierInformer"
