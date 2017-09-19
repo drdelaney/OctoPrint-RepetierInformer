@@ -11,11 +11,15 @@ import requests
 # - Parse req.text for error and display popup on web ui
 # - Get actual error details /  {error} is not working as expected
 
+# Known Bugs:
+# - Pause is not triggering when M600 is ran. Need to check norma pause mode.
+
 # Custom variables
 informerurl = 'https://informer.repetier-apps.com/api/1/message.php'
 
+# App Ids for the notifications. Found via packet capture. (And asking nicely for my own!)
 # Repetier-Host / Xh9lPgJujHahKiUq; 1: OK, 2: ERROR, 3: INFO, 4: PAUSE
-# Repetier-Server / (unknown); 5: OK, 6: ERROR, 7: INFO, 8: PAUSE
+# Repetier-Server / uH6CeLoNu8X4AfQp; 5: OK, 6: ERROR, 7: INFO, 8: PAUSE
 # OctoPrint / 0dd1065d141a856b22ef89b7d84b1ed5; 9: OK, 10: ERROR, 11: INFO, 12: PAUSE
 
 informerappid = '0dd1065d141a856b22ef89b7d84b1ed5'
@@ -143,8 +147,6 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 
 		self.sendInformer("Print Progress","Print Progress "+str(timerProgress)+"%","Print Progress "+str(timerProgress)+"%",inform_info)
 
-		return
-
 	def startTimer(self):
 		global timerStarted
 		global timer
@@ -188,14 +190,14 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 		timerStarted = False
 		timerProgress = '0'
 
-		return
+#       def on_settings_save(self, data):
+#       return
+
 
 	def on_print_progress(self, storage, path, progress):
 		global timerProgress
 
 		timerProgress = progress
-
-		return
 
 	def on_after_startup(self):
 		if not self._settings.get(['enabled']):
