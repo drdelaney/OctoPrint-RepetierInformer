@@ -225,7 +225,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				return
 		if event == 'Error':
 			if self._settings.get(['notify','printererror']):
-# FIXME
+                                # FIXME
 				#self.sendInformer("Printer Error","Communication error with Printer","{error}",inform_err)
 				self.sendInformer("Printer Error","Communication error with Printer","Communication error with Printer",inform_err)
 				return
@@ -255,7 +255,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				self.stopTimer()
 
 			if self._settings.get(['notify','printcancel']):
-				self.sendInformer("Printing cancleed","Printng has been canceled","Printing has been cacnceled by user",inform_err)
+				self.sendInformer("Printing canceled","Printng has been canceled","Printing has been cacnceled by user",inform_err)
 				return
 		if event == 'PrintPaused':
 			if self._settings.get(['notify','printpause']):
@@ -275,7 +275,7 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				return
 		if event == 'MovieFailed':
 			if self._settings.get(['notify','timelapsefailed']):
-# FIXME
+                                # FIXME
 				#self.sendInformer("Timelapse failed","Timelapse rendering has failed","{error}",inform_err)
 				self.sendInformer("Timelapse failed","Timelapse rendering has failed","Timelapse rendering has failed",inform_err)
 				return
