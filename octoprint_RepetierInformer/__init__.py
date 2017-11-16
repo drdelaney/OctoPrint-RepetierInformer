@@ -280,8 +280,29 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				self.sendInformer("Timelapse failed","Timelapse rendering has failed","Timelapse rendering has failed",inform_err)
 				return
 
+        def hook_gcode_pause(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+                # Return if not enabled
+                if not self._settings.get(['enabled']):
+                        self._logger.info("Not enabled, will not send.")
+                        return
 
- 
+                # Handle pause/resume gcodes
+                if gcode and gcode == "M24":
+                        if self._settings.get(['notify','printresume']):
+                                self.sendInformer("Printing resumed","Printng has been resumed","Printing has been resumed via M24",inform_ok)
+                                return
+                if gcode and gcode == "M25":
+                        if self._settings.get(['notify','printpause']):
+                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M25",inform_pause)
+                                return
+                if gcode and gcode == "M226":
+                        if self._settings.get(['notify','printpause']):
+                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M226",inform_pause)
+                                return
+                if gcode and gcode == "M600":
+                        if self._settings.get(['notify','printpause']):
+                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M600",inform_pause)
+                                return
 
 
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
@@ -295,6 +316,8 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
-		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+                "octoprint.comm.protocol.gcode.sent": __plugin_implementation__.hook_gcode_pause
+                
 	}
 
