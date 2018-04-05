@@ -7,12 +7,12 @@ import octoprint._version
 import requests
 
 # TODO:
-# - End user configurable messages
+# - User configurable messages
 # - Parse req.text for error and display popup on web ui
 # - Get actual error details /  {error} is not working as expected
 
-# Known Bugs:
-# - Pause is not triggering when M600 is ran. Need to check norma pause mode.
+# Known Issues:
+# - Pause by gcode will not work unless running 1.3.7 or later
 
 # Custom variables
 informerurl = 'https://informer.repetier-apps.com/api/1/message.php'
@@ -68,7 +68,13 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 				printerconnected=False,
 				printerdisconnected=False,
 				printererror=True,
-				interval=0
+				interval=0,
+                                gcodealert=dict(
+                                        M24=False,
+                                        M25=False,
+                                        M226=False,
+                                        M600=False
+                                )
 			)
 		)
 
@@ -287,21 +293,21 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
                         return
 
                 # Handle pause/resume gcodes
-                if gcode and gcode == "M24":
+                if self._settings.get(['notify','gcodealert','M24']) and gcode and gcode == "M24":
                         if self._settings.get(['notify','printresume']):
-                                self.sendInformer("Printing resumed","Printng has been resumed","Printing has been resumed via M24",inform_ok)
+                                self.sendInformer("Printing resumed","Printng has been resumed","Printing has been resumed via gcode M24",inform_ok)
                                 return
-                if gcode and gcode == "M25":
+                if self._settings.get(['notify','gcodealert','M25']) and gcode and gcode == "M25":
                         if self._settings.get(['notify','printpause']):
-                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M25",inform_pause)
+                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via gcode M25",inform_pause)
                                 return
-                if gcode and gcode == "M226":
+                if self._settings.get(['notify','gcodealert','M226']) and gcode and gcode == "M226":
                         if self._settings.get(['notify','printpause']):
-                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M226",inform_pause)
+                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via gcode M226",inform_pause)
                                 return
-                if gcode and gcode == "M600":
+                if self._settings.get(['notify','gcodealert','M600']) and gcode and gcode == "M600":
                         if self._settings.get(['notify','printpause']):
-                                self.sendInformer("Printing paused","Printng has been paused","Printing has been paused via M600",inform_pause)
+                                self.sendInformer("Printing paused","Printng has been paused for filament change","Printing has been paused via gcode M600 for filament change",inform_pause)
                                 return
 
 
