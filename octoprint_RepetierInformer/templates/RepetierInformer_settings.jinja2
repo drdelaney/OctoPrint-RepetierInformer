@@ -130,10 +130,25 @@
 			</label>
 		</div>
 
-		<label class="control-label">{{ _('Interval') }}</label>
+		<label class="control-label">{{ _('Gcode Alerts') }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.gcodealert.M24"> M24 Start/Resume SD Print
+			</label>
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.gcodealert.M25"> M25 Pause SD print
+			</label>
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.gcodealert.M226"> M226 Gcode pause / Wait for pin state
+			</label>
+			<label class="checkbox">
+				<input type="checkbox" data-bind="checked: settings.plugins.RepetierInformer.notify.gcodealert.M600"> M600 Filament change
+			</label>
+		</div>
+
+		<label class="control-label">{{ _('Status Interval') }}</label>
 		<div class="controls">
 			<input type="text" class="input-block-level" data-bind="value: settings.plugins.RepetierInformer.notify.interval">
-			<!--<select data-bind="options: notify_timer_values, value: settings.plugins.RepetierInformer.notify.interval"></select>-->
 		</div>
 
 	</div>
