@@ -114,7 +114,8 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 
 		# Return if not enabled
 		if not self._settings.get(['enabled']):
-			self._logger.info("Not enabled, will not send.")
+			# Log debug
+			#self._logger.info("Not enabled, will not send.")
 			return
 
 		# Add the hostname if defined
@@ -217,7 +218,8 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
 	def on_event(self, event, payload):
 		# Return if not enabled
 		if not self._settings.get(['enabled']):
-			self._logger.info("Not enabled, will not send.")
+			# Log debug
+			#self._logger.info("Not enabled, will not send.")
 			return
 
 		# Handle events
@@ -289,7 +291,8 @@ class RepetierinformerPlugin(octoprint.plugin.StartupPlugin,
         def hook_gcode_pause(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
                 # Return if not enabled
                 if not self._settings.get(['enabled']):
-                        self._logger.info("Not enabled, will not send.")
+			# Log debug
+                        #self._logger.info("Not enabled, will not send.")
                         return
 
                 # Handle pause/resume gcodes
